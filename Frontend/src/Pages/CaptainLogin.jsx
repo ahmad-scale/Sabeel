@@ -1,22 +1,45 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { CaptainDataContext } from '../context/CaptainContext'
 
 const CaptainLogin = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [captainData, setCaptainData] = useState({})
+  const [error, setError] = useState('')
+
+  const { setCaptain } = React.useContext(CaptainDataContext)
+  const navigate = useNavigate()
 
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault()
 
-    setCaptainData({
-      email: email,
+    const captain = {
+      email: email.trim().toLowerCase(),
       password: password
-    })
+    }
 
-    setEmail('')
-    setPassword('')
+    try {
+      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8000'
+      const response = await axios.post(`${baseUrl}/captains/login`, captain)
+
+      if (response.status === 200) {
+        const data = response.data
+        setCaptain(data.captain)
+        localStorage.setItem('token', data.token)
+        navigate('/captain-home')
+      }
+
+      setEmail('')
+      setPassword('')
+      setError('')
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+        'Unable to log in. Please check your credentials and try again.'
+      )
+    }
   }
 
   return (
@@ -53,6 +76,8 @@ const CaptainLogin = () => {
                 setPassword(e.target.value)
               }}
             />
+
+            {error && <p className='mb-5 text-red-600'>{error}</p>}
 
             <button className='bg-emerald-900 font-semibold text-white mb-7 rounded-4xl px-7 py-2 w-full text-lg placeholder:text-md' >Login</button>
           </form>

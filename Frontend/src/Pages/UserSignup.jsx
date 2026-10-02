@@ -1,30 +1,54 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import {UserDataContext} from '../context/UserContext'
 
 const UserSignup = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [userData, setUserData] = useState({})
 
+  const navigate = useNavigate()
 
-  const submitHandler = (e) => {
+  const { setUser } = React.useContext(UserDataContext)
+
+  const submitHandler = async (e) => {
     e.preventDefault()
 
-    setUserData({
+    const newUser = {
       email: email,
       password: password,
-      fullName: {
-        firstName: firstName,
-        lastName: lastName
+      fullname: {
+        firstname: firstName,
+        lastname: lastName
       }
-    })
+    }
 
-    setEmail('')
-    setPassword('')
-    setFirstName('')
-    setLastName('')
+    try {
+      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8000'
+      const response = await axios.post(`${baseUrl}/users/register`, newUser)
+
+      if (response.status === 201) {
+        const user = response.data.user
+        setUser(user)
+        localStorage.setItem('token', response.data.token)
+        navigate('/home')
+      }
+
+      setEmail('')
+      setPassword('')
+      setFirstName('')
+      setLastName('')
+    } catch (error) {
+      console.error('User registration failed:', error)
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        'Registration failed. Please try again.'
+
+      alert(message)
+    }
   }
 
   return (
@@ -59,7 +83,7 @@ const UserSignup = () => {
               />
             </div>
 
-            <h3 className='text-xl mb-2 font-medium'>Login with your email</h3>
+            <h3 className='text-xl mb-2 font-medium'>Email your email address</h3>
             <input
               type="email"
               className='bg-[#eeeeee] mb-5 rounded-4xl px-7 py-4 w-full text-lg placeholder:text-md'
@@ -83,7 +107,7 @@ const UserSignup = () => {
                 }}
             />
 
-            <button className='bg-emerald-900 font-semibold text-white mb-7 rounded-4xl px-7 py-2 w-full text-lg placeholder:text-md' >Login</button>
+            <button className='bg-emerald-900 font-semibold text-white mb-7 rounded-4xl px-7 py-2 w-full text-lg placeholder:text-md' >Create Account</button>
           </form>
         </div>
         <div className='flex flex-col justify-between items-center'>
