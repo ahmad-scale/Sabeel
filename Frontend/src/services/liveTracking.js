@@ -12,6 +12,14 @@ const getToken = () => {
   }
 }
 
+
+const socket = io(API_BASE_URL, {
+  auth: { token },
+  withCredentials: true,
+  transports: ['websocket', 'polling'],
+  autoConnect: false
+})
+
 export const useCaptainLocationPublisher = (enabled) => {
   const [trackingStatus, setTrackingStatus] = useState('connecting')
   const [trackingError, setTrackingError] = useState('')
