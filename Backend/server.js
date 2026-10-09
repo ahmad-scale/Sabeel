@@ -5,6 +5,19 @@ const { Server } = require('socket.io')
 const attachSocketHandlers = require('./socket')
 const port = process.env.PORT || 3000
 
+const io = new Server(server, {
+  cors: {
+    origin: [
+      'http://localhost:5173',
+      'https://onsabeel.netlify.app'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST']
+  },
+  transports: ['websocket', 'polling']
+})
+
+
 const server = http.createServer(app)
 const io = new Server(server, {
     cors: {
