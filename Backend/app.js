@@ -19,6 +19,8 @@ app.use('/users', userRoutes)
 app.use('/captains', captainRoutes)
 app.use('/rides', rideRoutes)
 
+app.use(express.static('frontend/dist'))
+
 app.get('/', (req, res) => {
     res.send('Salam!')
 })
