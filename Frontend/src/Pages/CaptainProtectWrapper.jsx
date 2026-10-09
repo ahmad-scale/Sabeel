@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { CaptainDataContext } from '../context/CaptainContext'
+import { API_BASE_URL } from '../services/api'
 
 const CaptainProtectedWrapper = ({ children }) => {
     const token = localStorage.getItem('token')
@@ -15,7 +16,7 @@ const CaptainProtectedWrapper = ({ children }) => {
             return
         }
 
-        axios.get(`${import.meta.env.VITE_BASE_URL}/captains/profile`, {
+        axios.get(`${API_BASE_URL}/captains/profile`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

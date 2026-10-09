@@ -107,7 +107,7 @@ The request body must be JSON and include:
 
 ```json
 {
-  "email": "sabeel@example.com",
+  "email": "sabeel@example.com"
   "password": "secret123"
 }
 ```
@@ -120,8 +120,12 @@ The request body must be JSON and include:
 {
   "token": "jwt-token",
   "user": {
-    "email": "sabeel@example.com",
-    "password": "hashed-password"
+    "_id": "user-id",
+    "fullname": {
+      "firstname": "Sabeel",
+      "lastname": "Ahmed"
+    },
+    "email": "sabeel@example.com"
   }
 }
 ```
@@ -163,16 +167,18 @@ Authorization: Bearer <jwt-token>
 
 **Status code: `200 OK`**
 
-The response contains the authenticated user's profile data.
+The response contains the authenticated user's profile under the `user` key.
 
 ```json
 {
-  "_id": "user-id",
-  "fullname": {
-    "firstname": "Sabeel",
-    "lastname": "Ahmed"
-  },
-  "email": "sabeel@example.com"
+  "user": {
+    "_id": "user-id",
+    "fullname": {
+      "firstname": "Sabeel",
+      "lastname": "Ahmed"
+    },
+    "email": "sabeel@example.com"
+  }
 }
 ```
 
@@ -452,3 +458,44 @@ Authorization: Bearer <jwt-token>
 | --- | --- |
 | `200 OK` | Captain logged out successfully. |
 | `401 Unauthorized` | Authentication token is missing, invalid, or blacklisted. |
+
+## Map and live tracking
+
+Copy `.env.example` to `.env` and configure the database connection, JWT secret, and frontend origin before starting the server. The Socket.IO server authenticates connections with the existing bearer token passed as `auth.token`.
+
+Authenticated captains emit `captain:location:update` with `{ "latitude": 31.52, "longitude": 74.35 }` while sharing location. Authenticated riders can emit `captain:watch` with the captain's MongoDB id; the server returns the latest location and streams subsequent `captain:location` events while that captain is connected. Socket connections and location updates are role-checked and coordinates are range-validated.
+
+## Ride lifecycle
+
+Riders can request a ride with a selected pickup and destination (including the
+Mapbox state/country metadata), route distance and duration, and a vehicle type.
+The server rejects cross-state/country trips, returns a fare quote for each
+vehicle type, and sends the request to nearby active captains with a matching
+vehicle. Requests and trip status are persisted in MongoDB.
+
+| Method | Endpoint | Access | Purpose |
+| --- | --- | --- | --- |
+| `GET` | `/rides/fare?distanceMeters=...&durationSeconds=...` | Rider | Quote car, bike, and rickshaw fares. |
+| `POST` | `/rides` | Rider | Create a ride request. Body includes pickup, destination, `vehicleType`, `distanceMeters`, and `durationSeconds`. |
+| `GET` | `/rides/active` | Rider or captain | Restore the caller's current requested, accepted, or ongoing ride. |
+| `GET` | `/rides/:rideId` | Rider or assigned captain | Retrieve the caller's ride. The verification code is returned only to the rider. |
+| `POST` | `/rides/:rideId/accept` | Captain | Accept an available ride matching the captain's vehicle. |
+| `POST` | `/rides/:rideId/start` | Assigned captain | Start an accepted ride with `{ "otp": "123456" }`. |
+| `POST` | `/rides/:rideId/complete` | Assigned captain | Complete an ongoing ride. |
+| `POST` | `/rides/:rideId/cancel` | Rider | Cancel a ride request before a captain accepts it. |
+| `GET` | `/rides/captain/stats` | Captain | Return completed-trip earnings, count, and distance. |
+
+Ride offers, acceptance, start, completion, and cancellation are propagated to
+connected clients over authenticated Socket.IO events. Captains must be online
+and sharing their browser location to receive offers. Estimated routing is
+provided by the frontend's Mapbox Directions integration; the server calculates
+fares from the submitted route distance and duration.
+
+The backend requires `PORT` (optional, defaults to `3000`), `DB_CONNECT`,
+`JWT_SECRET`, and `FRONTEND_URL` (optional; comma-separated origins for
+Socket.IO). Copy `Backend/.env.example` to `Backend/.env` and supply local
+values. The server connects to MongoDB before it starts accepting requests.
+
+Run backend unit tests with `npm test` from `Backend/`. The tests cover fare
+calculation and input bounds, trip state/country validation, and rejection of
+captain tokens for missing captain records.

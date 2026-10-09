@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { API_BASE_URL } from '../services/api'
 
 const CaptainLogout = () => {
   const navigate = useNavigate()
@@ -11,7 +12,7 @@ const CaptainLogout = () => {
 
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/captains/logout`,
+          `${API_BASE_URL}/captains/logout`,
           null,
           {
             headers: {

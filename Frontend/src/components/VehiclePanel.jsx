@@ -1,51 +1,45 @@
-import React from 'react'
 import carImage from '../assets/car.png'
 import autoImage from '../assets/auto.png'
 import bikeImage from '../assets/bike.png'
 
+const vehicles = [
+  { type: 'car', name: 'SabeelOn', capacity: 4, image: carImage, description: 'Comfortable city rides' },
+  { type: 'rikshaw', name: 'Auto-Rikshaw', capacity: 3, image: autoImage, description: 'Affordable local rides' },
+  { type: 'bike', name: 'Mo-beel', capacity: 1, image: bikeImage, description: 'Quick solo rides' },
+]
 
-const VehiclePanel = (props) => {
-  return (
-    <div>
-        <h5 ref={props.vehiclePanelRef} onClick={() => props.setVehiclePanel?.(false)} className='absolute top-3 left-6 text-3xl'>
-          <i className="ri-arrow-down-wide-line"></i>
-        </h5>
-        <h3 className='text-2xl font-semibold mb-3 text-center' >Choose a Vehicle</h3>
-        <div onClick={() => {
-            props.setConfirmedRidePanel(true)
-        }} className='flex cursor-pointer border-2 border-white rounded-3xl mb-2 w-full p-3 items-center justify-between transition-colors active:border-emerald-950 focus:border-emerald-950 '>
-          <img className='h-17' src={carImage} alt="Sabeel car" />
-          <div className=' w-1/2 '>
-            <h4 className='text-lg font-semibold'>SabeelOn <span><i className="ri-user-fill"></i>4</span></h4>
-            <h5 className='font-medium text-gray-600'>3 mins away</h5>
-            <p className='text-sm'>Affordable, compact rides</p>
-          </div>
-          <h2 className='text-xl font-semibold' >₹207.3</h2>
-        </div>
-        <div onClick={() => {
-            props.setConfirmedRidePanel(true)
-        }} className='flex cursor-pointer border-2 border-white rounded-3xl w-full p-3 items-center justify-between transition-colors active:border-emerald-950'>
-          <img className='h-15' src={autoImage} alt="Sabeel auto" />
-          <div className=' w-1/2 '>
-            <h4 className='text-lg font-semibold'>Auto-Rikshaw <span><i className="ri-user-fill"></i>3</span></h4>
-            <h5 className='font-medium text-gray-600'>21 mins away</h5>
-            <p className='text-sm'>Affordable, Rikshaw rides</p>
-          </div>
-          <h2 className='text-xl font-semibold' >₹79.9</h2>
-        </div>
-        <div onClick={() => {
-            props.setConfirmedRidePanel(true)
-        }} className='flex cursor-pointer border-2 border-white rounded-3xl w-full p-3 items-center justify-between transition-colors active:border-emerald-950'>
-          <img className='h-18' src={bikeImage} alt="Sabeel bike" />
-          <div className=' w-1/2 '>
-            <h4 className='text-lg font-semibold'>Mo-beel <span><i className="ri-user-fill"></i>1</span></h4>
-            <h5 className='font-medium text-gray-600'>7 mins away</h5>
-            <p className='text-sm'>Affordable, Quick Bike rides</p>
-          </div>
-          <h2 className='text-xl font-semibold' >₹101.1</h2>
-        </div>
-    </div>
-  )
-}
+const VehiclePanel = ({ fares, selectedVehicle, onSelectVehicle, setConfirmedRidePanel, setVehiclePanel }) => (
+  <div>
+    <button
+      type='button'
+      onClick={() => setVehiclePanel(false)}
+      className='absolute top-3 left-6 text-3xl'
+      aria-label='Close vehicle selection'
+    >
+      <i className='ri-arrow-down-wide-line' />
+    </button>
+    <h3 className='mb-3 text-center text-2xl font-semibold'>Choose a Vehicle</h3>
+    {vehicles.map((vehicle) => (
+      <button
+        key={vehicle.type}
+        type='button'
+        disabled={!fares}
+        onClick={() => {
+          onSelectVehicle(vehicle.type)
+          setConfirmedRidePanel(true)
+        }}
+        className={`mb-2 flex w-full items-center justify-between rounded-3xl border-2 p-3 text-left transition-colors disabled:cursor-wait disabled:opacity-60 ${selectedVehicle === vehicle.type ? 'border-emerald-900 bg-emerald-50' : 'border-white hover:border-emerald-200'}`}
+      >
+        <img className='h-16 w-20 object-contain' src={vehicle.image} alt='' />
+        <span className='w-1/2'>
+          <span className='block text-lg font-semibold'>{vehicle.name} <i className='ri-user-fill' />{vehicle.capacity}</span>
+          <span className='block text-sm text-gray-600'>{vehicle.description}</span>
+        </span>
+        <span className='text-xl font-semibold'>{fares ? `₹${fares[vehicle.type]}` : '…'}</span>
+      </button>
+    ))}
+    {!fares && <p role='status' className='text-center text-sm text-slate-500'>Calculating route fares…</p>}
+  </div>
+)
 
 export default VehiclePanel

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { UserDataContext } from '../context/UserContext'
+import { API_BASE_URL } from '../services/api'
 
 const UserProtectedWrapper = ({ children }) => {
     const rawToken = localStorage.getItem('token')
@@ -21,7 +22,7 @@ const UserProtectedWrapper = ({ children }) => {
     useEffect(() => {
         if (!token) return
 
-        axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
+        axios.get(`${API_BASE_URL}/users/profile`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

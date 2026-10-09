@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { CaptainDataContext } from '../context/CaptainContext'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { API_BASE_URL } from '../services/api'
 
 const CaptainSignup = () => {
   const navigate = useNavigate()
@@ -38,7 +39,7 @@ const CaptainSignup = () => {
       }
     }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData)  
+    const response = await axios.post(`${API_BASE_URL}/captains/register`, captainData)
 
     if (response.status === 201) {
       const data = response.data
@@ -59,18 +60,18 @@ const CaptainSignup = () => {
 
   return (
     <div>
-      <div className='p-7 flex flex-col justify-between h-screen'>
+      <div className='mx-auto flex min-h-dvh w-full max-w-xl flex-col justify-between p-5 sm:p-7'>
         <div>
-          <h1 className='text-5xl text-emerald-950 mb-15 font-bold '>Sabeel</h1>
+          <h1 className='mb-10 text-4xl font-bold text-emerald-950 sm:mb-15 sm:text-5xl'>Sabeel <span className='ml-1 text-lg sm:text-xl'>Drivers</span></h1>
 
           <form onSubmit={(e) => {
             submitHandler(e)
           }}>
             <h3 className='text-xl mb-2 font-medium'>Enter your name</h3>
-            <div className='flex gap-4 mb-5'>
+            <div className='mb-5 flex gap-2 sm:gap-4'>
               <input
                 type="text"
-                className='bg-[#eeeeee] rounded-l-4xl px-7 w-1/2 py-4 text-lg placeholder:text-md'
+                className='min-w-0 w-1/2 rounded-l-4xl bg-[#eeeeee] px-3 py-4 text-base sm:px-7 sm:text-lg'
                 required
                 placeholder='First Name'
                 value={firstName}
@@ -80,7 +81,7 @@ const CaptainSignup = () => {
               />
               <input
                 type="text"
-                className='bg-[#eeeeee] rounded-r-4xl px-7 py-4 w-1/2 text-lg placeholder:text-md'
+                className='min-w-0 w-1/2 rounded-r-4xl bg-[#eeeeee] px-3 py-4 text-base sm:px-7 sm:text-lg'
                 placeholder='Last Name'
                 value={lastName}
                 onChange={(e) => {

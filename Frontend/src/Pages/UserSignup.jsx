@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import {UserDataContext} from '../context/UserContext'
+import { UserDataContext } from '../context/UserContext'
+import { API_BASE_URL } from '../services/api'
 
 const UserSignup = () => {
   const [email, setEmail] = useState('')
@@ -26,8 +27,7 @@ const UserSignup = () => {
     }
 
     try {
-      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8000'
-      const response = await axios.post(`${baseUrl}/users/register`, newUser)
+      const response = await axios.post(`${API_BASE_URL}/users/register`, newUser)
 
       if (response.status === 201) {
         const user = response.data.user
@@ -53,32 +53,32 @@ const UserSignup = () => {
 
   return (
     <div>
-      <div className='p-7 flex flex-col justify-between h-screen'>
+      <div className='mx-auto flex min-h-dvh w-full max-w-xl flex-col justify-between p-5 sm:p-7'>
         <div>
-          <h1 className='text-5xl text-emerald-950 mb-15 font-bold '>Sabeel</h1>
+          <h1 className='mb-10 text-4xl font-bold text-emerald-950 sm:mb-15 sm:text-5xl'>Sabeel</h1>
 
           <form onSubmit={(e) => {
             submitHandler(e)
           }}>
             <h3 className='text-xl mb-2 font-medium'>Enter your name</h3>
-            <div className='flex gap-4 mb-5'>
+            <div className='mb-5 flex gap-2 sm:gap-4'>
               <input
                 type="text"
-                className='bg-[#eeeeee] rounded-l-4xl px-7 w-1/2 py-4 text-lg placeholder:text-md'
+                className='min-w-0 w-1/2 rounded-l-4xl bg-[#eeeeee] px-3 py-4 text-base sm:px-7 sm:text-lg'
                 required
                 placeholder='First Name'
                 value={firstName}
                 onChange={(e) => {
-                  setFirstName(e.target.value) 
+                  setFirstName(e.target.value)
                 }}
               />
               <input
                 type="text"
-                className='bg-[#eeeeee] rounded-r-4xl px-7 py-4 w-1/2 text-lg placeholder:text-md'
+                className='min-w-0 w-1/2 rounded-r-4xl bg-[#eeeeee] px-3 py-4 text-base sm:px-7 sm:text-lg'
                 placeholder='Last Name'
                 value={lastName}
                 onChange={(e) => {
-                  setLastName(e.target.value) 
+                  setLastName(e.target.value)
                 }}
               />
             </div>
@@ -91,8 +91,8 @@ const UserSignup = () => {
               placeholder='email@example.com'
               value={email}
               onChange={(e) => {
-                  setEmail(e.target.value) 
-                }}
+                setEmail(e.target.value)
+              }}
             />
 
             <h3 className='text-xl mb-2 font-medium' >Enter Password</h3>
@@ -103,8 +103,8 @@ const UserSignup = () => {
               placeholder='Password'
               value={password}
               onChange={(e) => {
-                  setPassword(e.target.value) 
-                }}
+                setPassword(e.target.value)
+              }}
             />
 
             <button className='bg-emerald-900 font-semibold text-white mb-7 rounded-4xl px-7 py-2 w-full text-lg placeholder:text-md' >Create Account</button>

@@ -1,60 +1,60 @@
-import React from 'react'
 import carImage from '../assets/car.png'
+import autoImage from '../assets/auto.png'
+import bikeImage from '../assets/bike.png'
 
-const ConfirmedVehicle = (props) => {
-  return (
-    <div className='relative'>
+const vehicleImages = { car: carImage, rikshaw: autoImage, bike: bikeImage }
+const formatDuration = (seconds) => {
+  const minutes = Math.round(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  return hours ? `${hours} hr ${minutes % 60} min` : `${minutes} min`
+}
+
+const ConfirmedVehicle = ({
+  pickup,
+  destination,
+  routeInfo,
+  fare,
+  vehicleType,
+  isSubmitting,
+  setConfirmedRidePanel,
+  onConfirm,
+}) => (
+  <div className='relative'>
+    <button
+      type='button'
+      className='absolute left-1/2 top-0 w-[93%] -translate-x-1/2 text-center'
+      onClick={() => setConfirmedRidePanel(false)}
+      aria-label='Close ride confirmation'
+    >
+      <i className='ri-arrow-down-wide-line text-3xl' />
+    </button>
+    <h3 className='mb-5 pt-8 text-center text-2xl font-semibold'>Confirm Your Ride</h3>
+    <div className='flex flex-col items-center gap-5'>
+      <img className='h-28 object-contain' src={vehicleImages[vehicleType]} alt='' />
+      <div className='w-full'>
+        <div className='mb-2 flex items-center gap-5 border-b p-3'>
+          <i className='ri-map-pin-fill text-4xl' aria-hidden='true' />
+          <div><h3 className='text-lg font-medium'>Pickup</h3><p className='text-sm text-gray-700'>{pickup?.name}</p></div>
+        </div>
+        <div className='mb-2 flex items-center gap-5 border-b p-3'>
+          <i className='ri-map-pin-user-fill text-4xl' aria-hidden='true' />
+          <div><h3 className='text-lg font-medium'>Destination</h3><p className='text-sm text-gray-700'>{destination?.name}</p></div>
+        </div>
+        <div className='flex items-center justify-between p-3'>
+          <span>{routeInfo ? `${(routeInfo.distance / 1000).toFixed(1)} km · about ${formatDuration(routeInfo.duration)}` : 'Calculating route…'}</span>
+          <strong>{Number.isFinite(fare) ? `₹${fare}` : '—'}</strong>
+        </div>
+      </div>
       <button
         type='button'
-        className='p-0 text-center w-[93%] absolute top-0 left-1/2 -translate-x-1/2'
-        onClick={() => {
-          props.setConfirmedRidePanel(false)
-        }}
+        disabled={isSubmitting || !routeInfo || !Number.isFinite(fare)}
+        className='w-full rounded-3xl bg-green-600 p-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60'
+        onClick={onConfirm}
       >
-        <i className='text-3xl ri-arrow-down-wide-line'></i>
+        {isSubmitting ? 'Requesting…' : 'Request ride'}
       </button>
-
-
-      <h3 className='pt-8 text-2xl font-semibold mb-5 text-center'>Confirm Your Ride</h3>
-      <div className='flex gap-5 justify-between flex-col items-center'>
-        <img className='h-30' src={carImage} alt='Sabeel car' />
-
-        <div className='w-full '>
-          <div className='mb-2 flex items-center gap-5 p-3 border-b'>
-            <i className=" text-4xl ri-map-pin-fill"></i>
-            <div>
-              <h3 className='text-lg font-medium'>562/11-D</h3>
-              <p className='text-medium -mt-1 text-gray-700'>Badarpur, New Delhi</p>
-            </div>
-          </div>
-          <div className='mb-2 flex items-center gap-5 p-3 border-b'>
-            <i className=" text-4xl ri-map-pin-user-fill"></i>
-            <div>
-              <h3 className='text-lg font-medium'>562/11-D</h3>
-              <p className='text-medium -mt-1 text-gray-700'>Badarpur, New Delhi</p>
-            </div>
-          </div>
-          <div className='mb-2 flex items-center gap-5 p-3'>
-            <i className=" text-4xl ri-currency-line"></i>
-            <div>
-              <h3 className='text-lg font-medium'>₹ 112.3</h3>
-              <p className='text-medium -mt-1 text-gray-700'>Cash</p>
-            </div>
-          </div>
-        </div>
-        <button
-          type='button'
-          className='w-full bg-green-500 text-white font-semibold p-2 rounded-3xl'
-          onClick={() => {
-            props.setVehicleFound(true)
-            props.setConfirmedRidePanel(false)
-          }}
-        >
-          Confirm
-        </button>
-      </div>
     </div>
-  )
-}
+  </div>
+)
 
 export default ConfirmedVehicle

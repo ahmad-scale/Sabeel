@@ -12,7 +12,8 @@ module.exports.registerUser = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() })
         }
 
-        const { fullname, email, password } = req.body;
+        const { fullname, password } = req.body;
+        const email = req.body.email.trim().toLowerCase()
 
         const isUserAlreadyExist = await userModel.findOne({ email })
 
@@ -55,9 +56,14 @@ module.exports.loginUser = async (req, res, next) => {
         return res.status(400).json({ errors: errors.array() })
     }
 
-    const { email, password } = req.body;
+    const email = req.body.email.trim().toLowerCase()
+    const { password } = req.body
 
-    const user = await userModel.findOne({ email }).select('password')
+    const emailPattern = new RegExp(
+        `^${email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`,
+        'i'
+    )
+    const user = await userModel.findOne({ email: emailPattern }).select('+password')
 
     if (!user) {
         return res.status(401).json({
@@ -72,18 +78,20 @@ module.exports.loginUser = async (req, res, next) => {
     }
 
     const token = user.generateAuthToken()
+    const userData = user.toObject()
+    delete userData.password
 
     res.cookie('token', token)
 
     res.status(200).json({
         token: token,
-        user: user
+        user: userData
     })
 }
 
 module.exports.getUserProfile = async (req, res, next) => {
 
-    res.status(200).json(req.user)
+    res.status(200).json({ user: req.user })
 
 }
 

@@ -1,16 +1,32 @@
-# React + Vite
+# Sabeel frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React/Vite rider and captain client for Sabeel.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Copy `.env.example` to `.env` and configure:
 
-## React Compiler
+- `VITE_BASE_URL`: Backend API/Socket.IO URL; defaults to `http://localhost:3000`.
+- `VITE_MAPBOX_TOKEN`: Public Mapbox token with Geocoding and Directions access.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+`VITE_*` values are exposed in the browser bundle. Use only a public, restricted
+Mapbox token here; never put backend secrets in frontend variables. Restart the
+Vite development server after changing environment variables.
 
-## Expanding the ESLint configuration
+From this directory, install dependencies and start the development server:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```powershell
+npm install
+npm run dev
+```
+
+Build and lint:
+
+```powershell
+npm run build
+npm run lint
+```
+
+The backend and MongoDB must be running for authentication, fare quotes, ride
+requests, driver offers, and live ride updates. See the [project setup](../README.md)
+and [backend API guide](../Backend/README.md).
