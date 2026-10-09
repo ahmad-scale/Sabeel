@@ -8,7 +8,7 @@
   "main": "server.js",
   "scripts": {
     "test": "node --test",
-    "server": "nodemon server.js"
+    "server": "npm server.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
