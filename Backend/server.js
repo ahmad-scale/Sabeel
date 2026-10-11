@@ -7,15 +7,20 @@ const port = process.env.PORT || 3000
 
 const server = http.createServer(app)
 
-const allowedOrigins = (process.env.FRONTEND_URL || '')
-  .split(',')
-  .map((url) => url.trim())
-  .filter(Boolean)
+const allowedOrigins = new Set([
+  'http://localhost:5173',
+  'https://onsabeel.netlify.app',
+  ...((process.env.FRONTEND_URL || '')
+    .split(',')
+    .map((url) => url.trim())
+    .filter(Boolean)
+    .map((url) => new URL(url).origin))
+])
 
 const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.has(origin)) {
         callback(null, true)
         return
       }

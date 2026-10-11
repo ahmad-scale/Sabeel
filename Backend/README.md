@@ -493,8 +493,11 @@ fares from the submitted route distance and duration.
 
 The backend requires `PORT` (optional, defaults to `3000`), `DB_CONNECT`,
 `JWT_SECRET`, and `FRONTEND_URL` (optional; comma-separated origins for
-Socket.IO). Copy `Backend/.env.example` to `Backend/.env` and supply local
-values. The server connects to MongoDB before it starts accepting requests.
+Socket.IO). Local development (`http://localhost:5173`) and the production
+frontend (`https://onsabeel.netlify.app`) are allowed by default; add any other
+frontend origins to `FRONTEND_URL`. Copy `Backend/.env.example` to
+`Backend/.env` and supply local values. The server connects to MongoDB before
+it starts accepting requests.
 
 Run backend unit tests with `npm test` from `Backend/`. The tests cover fare
 calculation and input bounds, trip state/country validation, and rejection of

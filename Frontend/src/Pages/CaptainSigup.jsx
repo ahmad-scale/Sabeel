@@ -12,17 +12,18 @@ const CaptainSignup = () => {
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [userData, setUserData] = useState({})
   const [vehicleColor, setVehicleColor] = useState('')
   const [vehiclePlate, setVehiclePlate] = useState('')
   const [vehicleCapacity, setVehicleCapacity] = useState('')
   const [vehicleType, setVehicleType] = useState('')
+  const [error, setError] = useState('')
 
-  const { captain, setCaptain } = React.useContext(CaptainDataContext)
+  const { setCaptain } = React.useContext(CaptainDataContext)
 
 
   const submitHandler = async (e) => {
     e.preventDefault()
+    setError('')
 
     const captainData = {
       email: email,
@@ -39,23 +40,31 @@ const CaptainSignup = () => {
       }
     }
 
-    const response = await axios.post(`${API_BASE_URL}/captains/register`, captainData)
+    try {
+      const response = await axios.post(`${API_BASE_URL}/captains/register`, captainData)
 
-    if (response.status === 201) {
-      const data = response.data
-      setCaptain(data.captain)
-      localStorage.setItem('token', data.token)
-      navigate('/captain-home')
+      if (response.status === 201) {
+        const data = response.data
+        setCaptain(data.captain)
+        localStorage.setItem('token', data.token)
+        navigate('/captain-home')
+      }
+
+      setEmail('')
+      setPassword('')
+      setFirstName('')
+      setLastName('')
+      setVehicleColor('')
+      setVehiclePlate('')
+      setVehicleCapacity('')
+      setVehicleType('')
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+        requestError.response?.data?.errors?.[0]?.msg ||
+        'Registration failed. Please try again.'
+      )
     }
-
-    setEmail('')
-    setPassword('')
-    setFirstName('')
-    setLastName('')
-    setVehicleColor('')
-    setVehiclePlate('')
-    setVehicleCapacity('')
-    setVehicleType('')
   }
 
   return (
@@ -98,9 +107,12 @@ const CaptainSignup = () => {
               placeholder='email@example.com'
               value={email}
               onChange={(e) => {
+                setError('')
                 setEmail(e.target.value)
               }}
             />
+
+            {error && <p role='alert' className='mb-5 text-red-700'>{error}</p>}
 
             <h3 className='text-xl mb-2 font-medium' >Enter Password</h3>
             <input

@@ -1,23 +1,14 @@
 import { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import axios from 'axios'
 import { UserDataContext } from '../context/UserContext'
-import { API_BASE_URL } from '../services/api'
+import { API_BASE_URL, getStoredToken } from '../services/api'
 
 const UserProtectedWrapper = ({ children }) => {
-    const rawToken = localStorage.getItem('token')
-    const token = rawToken?.startsWith('"') && rawToken.endsWith('"') ? JSON.parse(rawToken) : rawToken
-    const navigate = useNavigate()
+    const token = getStoredToken()
     const { setUser } = useContext(UserDataContext)
     const [isLoading, setIsLoading] = useState(true)
-
-    useEffect(() => {
-        if (!token) {
-            navigate('/login', { replace: true })
-            return
-        }
-
-    }, [token, navigate])
+    const [isUnauthorized, setIsUnauthorized] = useState(false)
 
     useEffect(() => {
         if (!token) return
@@ -31,15 +22,21 @@ const UserProtectedWrapper = ({ children }) => {
                 const data = response.data
                 setUser(data.user)
             }
-        }).catch(() => {
-            localStorage.removeItem('token')
-            navigate('/login', { replace: true })
+        }).catch((error) => {
+            if (error.response?.status === 401) {
+                localStorage.removeItem('token')
+                setIsUnauthorized(true)
+            }
         }).finally(() => {
             setIsLoading(false)
         })
-    }, [token, navigate, setUser])
+    }, [token, setUser])
 
-    if(isLoading) {
+    if (!token || isUnauthorized) {
+        return <Navigate to='/login' replace />
+    }
+
+    if (isLoading) {
         return(
             <div>Loading...</div>
         )

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Start from './Pages/Start'
 import UserLogin from './Pages/UserLogin'
 import UserSignup from './Pages/UserSignup'
@@ -54,6 +54,7 @@ const App = () => {
             </CaptainProtectedWrapper>
           }
         />
+        <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>
     </div>
   )
